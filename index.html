@@ -42,6 +42,11 @@
 <body>
   <h1>Activity Plan Worksheet</h1>
 
+  <label for="globalSubject">Subject Area (applies to all activities)</label>
+  <select id="globalSubject">
+    <option value="">-- Select Subject --</option>
+  </select>
+
   <div id="formContainer"></div>
 
   <script>
@@ -158,11 +163,6 @@
       return `
         <div class="activity-section">
           <h2>Activity ${index + 1}</h2>
-          <label for="subject${index}">Subject Area</label>
-          <select id="subject${index}" onchange="updateTopics(${index})">
-            <option value="">-- Select Subject --</option>
-            ${Object.keys(activityOptions).map(subject => `<option value="${subject}">${subject}</option>`).join('')}
-          </select>
 
           <label for="topic${index}">Topic Area</label>
           <select id="topic${index}">
@@ -187,20 +187,31 @@
       `;
     }
 
-    function updateTopics(index) {
-      const subject = document.getElementById(`subject${index}`).value;
-      const topicSelect = document.getElementById(`topic${index}`);
-
-      topicSelect.innerHTML = '<option value="">-- Select Topic --</option>';
-      if (activityOptions[subject]) {
-        activityOptions[subject].forEach(topic => {
-          const opt = document.createElement("option");
-          opt.value = topic;
-          opt.textContent = topic;
-          topicSelect.appendChild(opt);
-        });
+    function updateAllTopics() {
+      const subject = document.getElementById("globalSubject").value;
+      for (let i = 0; i < 5; i++) {
+        const topicSelect = document.getElementById(`topic${i}`);
+        topicSelect.innerHTML = '<option value="">-- Select Topic --</option>';
+        if (activityOptions[subject]) {
+          activityOptions[subject].forEach(topic => {
+            const opt = document.createElement("option");
+            opt.value = topic;
+            opt.textContent = topic;
+            topicSelect.appendChild(opt);
+          });
+        }
       }
     }
+
+    // Populate the global subject dropdown
+    const globalSubject = document.getElementById("globalSubject");
+    Object.keys(activityOptions).forEach(subject => {
+      const opt = document.createElement("option");
+      opt.value = subject;
+      opt.textContent = subject;
+      globalSubject.appendChild(opt);
+    });
+    globalSubject.addEventListener("change", updateAllTopics);
 
     // Render the five sections
     const container = document.getElementById("formContainer");
